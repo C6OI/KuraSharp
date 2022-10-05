@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+        x:Class="KuraSharp.Entrance"
+        Title="Kuracord"
+        Icon="Assets/favicon.ico"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Name="MainGrid"
+          RowDefinitions="Auto, *">
+        
+        <Image Grid.Row="0"
+               Source="avares://KuraSharp/Assets/Kuracord.png"
+               Width="375"
+               Margin="0, 75, 0, 100"/>
+        
+        <Panel Grid.Row="1"
+               Name="RegisterPanel"
+               IsVisible="True">
+            
+            <StackPanel Spacing="15">
+            
+                <TextBox Name="RegisterUsernameField"
+                         Width="225"
+                         Watermark="Имя пользователя"/>
+            
+                <TextBox Name="RegisterEmailField"
+                         Width="225"
+                         Watermark="Электрическая почта"/>
+            
+                <TextBox Name="RegisterPasswordField"
+                         Width="225"
+                         Watermark="Пароль"
+                         PasswordChar="*"/>
+            
+                <Button Name="RegisterButton"
+                        HorizontalAlignment="Center"
+                        Width="230"
+                        HorizontalContentAlignment="Center"
+                        Content="Зарегистрироваться"
+                        Click="RegisterButton_OnClick"/>
+                
+                <Button Name="AlreadyRegistered"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Foreground="#FFFFFF"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Click="AlreadyRegistered_OnClick">
+
+                    <Button.Template>
+                        <ControlTemplate>
+                            <TextBlock Text="Уже зарегистрированы?"/>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+            
+            </StackPanel>
+            
+        </Panel>
+        
+        <Panel Grid.Row="1"
+               Name="LoginPanel"
+               IsVisible="False">
+            
+            <StackPanel Spacing="15">
+                
+                <TextBox Name="LoginUsernameField"
+                         Width="225"
+                         Watermark="Имя пользователя"/>
+                
+                <TextBox Name="LoginPasswordField"
+                         Width="225"
+                         Watermark="Пароль"
+                         PasswordChar="*"/>
+                
+                <Button Name="LoginButton"
+                        HorizontalAlignment="Center"
+                        Width="230"
+                        HorizontalContentAlignment="Center"
+                        Content="Войти"/>
+                
+                <StackPanel Orientation="Horizontal"
+                            Spacing="7"
+                            HorizontalAlignment="Center">
+                    
+                    <Button Name="ForgotButton"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Foreground="#FFFFFF"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            BorderBrush="Transparent">
+
+                        <Button.Template>
+                            <ControlTemplate>
+                                <TextBlock Text="Забыли пароль?"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    
+                    </Button>
+
+                    <Button Name="NotRegistered"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Foreground="#FFFFFF"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            Click="NotRegistered_OnClick">
+
+                        <Button.Template>
+                            <ControlTemplate>
+                                <TextBlock Text="Нет аккаунта?"/>
+                            </ControlTemplate>
+                        </Button.Template>
+
+                    </Button>
+                    
+                </StackPanel>
+                
+            </StackPanel>
+            
+        </Panel>
+        
+    </Grid>
+    
+</Window>
