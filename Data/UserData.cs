@@ -1,17 +1,39 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
 
-namespace KuraSharp.Data; 
+namespace KuraSharp.Data;
+
+public class UserGuildInfo {
+    public string? Nickname { get; set; }
+    public int Id { get; set; }
+    public DateTime JoinedAt { get; set; }
+    public GuildInfo Guild { get; set; } = new();
+}
+
+public class GuildInfo {
+    public string Name { get; set; } = "";
+    public string? Icon { get; set; }
+    public string VanityUrl { get; set; } = "";
+    public string? Description { get; set; }
+    public int Id { get; set; }
+    public bool Disabled { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
 
 public class UserData : BaseData {
-    [JsonPropertyName("id")] public int Id { get; set; }
-    [JsonPropertyName("username")] public string Username { get; set; }
-    [JsonPropertyName("discriminator")] public string Discriminator { get; set; }
-    [JsonPropertyName("flags")] public int Flags { get; set; }
-    [JsonPropertyName("avatar")] public string Avatar { get; set; }
-    [JsonPropertyName("bio")] public string Bio { get; set; }
-    [JsonPropertyName("token")] public string Token { get; set; }
-    [JsonPropertyName("email")] public string Email { get; set; }
-    [JsonPropertyName("verified")] public bool Verified { get; set; }
-    [JsonPropertyName("disabled")] public bool Disabled { get; set; }
-    [JsonPropertyName("premiumType")]  public int PremiumType { get; set; }
+    public string Username { get; set; } = "";
+    public string Discriminator { get; set; } = "0000";
+    public string Email { get; set; } = "";
+    public string Token { get; set; } = "";
+    public string Avatar { get; set; } = "";
+    public string Bio { get; set; } = "";
+    public int Id { get; set; }
+    public int Flags { get; set; }
+    public int PremiumType { get; set; }
+    public bool Disabled { get; set; }
+    public bool Bot { get; set; }
+    public bool Verified { get; set; }
+    public List<UserGuildInfo> Guilds { get; set; } = new();
+
+    public string User() => $"{Username}#{Discriminator}";
 }

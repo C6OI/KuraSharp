@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -20,29 +21,30 @@ public static class UrlExtensions {
             return await httpClient.GetAsync(uri);
     }
 
-    public static string PostRequest(string uri, IEnumerable<KeyValuePair<string, string>> data) {
-        using (HttpClient httpClient = new()) {
-            HttpContent content = new FormUrlEncodedContent(data);
-            HttpResponseMessage responseMessage = httpClient.PostAsync(uri, content).Result;
+    public static BaseData HttpRequest(string uri, HttpMethod httpMethod,  Dictionary<string, string>? jsonData, Dictionary<string, string>? headers) {
+        HttpRequestMessage httpRequestMessage = new() {
+            Method = httpMethod,
+            RequestUri = new Uri(uri),
+            Headers = {
+                { HttpRequestHeader.Accept.ToString(), "application/json" }
+            }
+        };
 
-            Logger.Information(responseMessage.StatusCode.ToString());
-            
-            return responseMessage.Content.ReadAsStringAsync().Result;
+        if (jsonData != null) {
+            string serializedData = JsonConvert.SerializeObject(jsonData);
+            httpRequestMessage.Content = new StringContent(serializedData, Encoding.UTF8, "application/json");
         }
-    }
 
-    public static BaseData PostRequest(string uri, Dictionary<string, string> data, string contentType = "application/json") {
-        string serializedData = JsonConvert.SerializeObject(data);
+        headers?.ToList().ForEach(h => httpRequestMessage.Headers.Add(h.Key, h.Value));
 
         using (HttpClient httpClient = new()) {
-            HttpContent content = new StringContent(serializedData, Encoding.UTF8, contentType);
-            HttpResponseMessage responseMessage = httpClient.PostAsync(uri, content).Result;
+            HttpResponseMessage responseMessage = httpClient.SendAsync(httpRequestMessage).Result;
 
             BaseData responseData = new() {
                 Response = responseMessage.StatusCode,
                 JsonData = responseMessage.Content.ReadAsStringAsync().Result
             };
-            
+
             return responseData;
         }
     }

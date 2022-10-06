@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace KuraSharp.Data; 
+﻿namespace KuraSharp.Data; 
 
 public class ErrorData : BaseData {
-    [JsonPropertyName("statusCode")] public int StatusCode { get; set; }
-    [JsonPropertyName("error")] public string Error { get; set; }
-    [JsonPropertyName("message")] public string Message { get; set; }
+    public string Error { get; set; } = "";
+    public string Message { get; set; } = "";
+    public int StatusCode { get; set; }
 }
 

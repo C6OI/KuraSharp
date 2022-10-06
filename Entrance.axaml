@@ -19,7 +19,7 @@
         
         <Panel Grid.Row="1"
                Name="RegisterPanel"
-               IsVisible="True">
+               IsVisible="False">
             
             <StackPanel Spacing="15">
             
@@ -66,13 +66,13 @@
         
         <Panel Grid.Row="1"
                Name="LoginPanel"
-               IsVisible="False">
+               IsVisible="True">
             
             <StackPanel Spacing="15">
                 
-                <TextBox Name="LoginUsernameField"
+                <TextBox Name="LoginEmailField"
                          Width="225"
-                         Watermark="Имя пользователя"/>
+                         Watermark="Электрическая почта"/>
                 
                 <TextBox Name="LoginPasswordField"
                          Width="225"
@@ -83,7 +83,8 @@
                         HorizontalAlignment="Center"
                         Width="230"
                         HorizontalContentAlignment="Center"
-                        Content="Войти"/>
+                        Content="Войти"
+                        Click="LoginButton_OnClick"/>
                 
                 <StackPanel Orientation="Horizontal"
                             Spacing="7"
