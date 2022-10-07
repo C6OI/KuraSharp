@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace KuraSharp.Data;
 
@@ -12,12 +13,21 @@ public class UserGuildInfo {
 
 public class GuildInfo {
     public string Name { get; set; } = "";
-    public string? Icon { get; set; }
+    public string ShortName { get; set; } = "";
     public string VanityUrl { get; set; } = "";
     public string? Description { get; set; }
     public int Id { get; set; }
     public bool Disabled { get; set; }
     public DateTime CreatedAt { get; set; }
+    
+    public string? Icon {
+        get => _icon;
+        set {
+            if (value != null) _icon = $"https://cdn.kuracord.tk/icons/{Id}/{value}";
+        }
+    }
+
+    [JsonIgnore] string? _icon;
 }
 
 public class UserData : BaseData {

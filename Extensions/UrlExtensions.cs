@@ -42,7 +42,7 @@ public static class UrlExtensions {
             HttpResponseMessage responseMessage = await httpClient.SendAsync(httpRequestMessage);
 
             BaseData responseData = new() {
-                Response = responseMessage.StatusCode,
+                IsOk = responseMessage.IsSuccessStatusCode,
                 Data = responseMessage.Content
             };
 
@@ -72,7 +72,7 @@ public static class UrlExtensions {
             HttpResponseMessage responseMessage = httpClient.Send(httpRequestMessage);
 
             BaseData responseData = new() {
-                Response = responseMessage.StatusCode,
+                IsOk = responseMessage.IsSuccessStatusCode,
                 Data = responseMessage.Content
             };
 

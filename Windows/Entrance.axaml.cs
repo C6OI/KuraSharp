@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,7 +12,7 @@ using MessageBox.Avalonia.DTO;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace KuraSharp; 
+namespace KuraSharp.Windows; 
 
 public partial class Entrance : Window {
     static readonly ILogger Logger = Log.Logger.ForType<Entrance>();
@@ -65,19 +64,15 @@ public partial class Entrance : Window {
             
         BaseData response = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/", HttpMethod.Post, data, null);
 
-        switch (response.Response) {
-            case HttpStatusCode.OK:
-                StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await response.Data.ReadAsStringAsync());
-                Logger.Information($"Registration successful. Account: {StaticData.UserData.User()}");
-                ShowChat();
-                break;
-            
-            default: {
-                HttpError.Error(response, this);
-                _authHandled = false;
-                break;
-            }
+        if (!response.IsOk) {
+            HttpError.Error(response, this);
+            _authHandled = false;
+            return;
         }
+
+        StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await response.Data.ReadAsStringAsync());
+        Logger.Information($"Registration successful. Account: {StaticData.UserData.User()}");
+        ShowChat();
     }
     
     async void LoginButton_OnClick(object? s, RoutedEventArgs e) {
@@ -103,38 +98,29 @@ public partial class Entrance : Window {
 
         BaseData loginResponse = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/login", HttpMethod.Post, loginData, null);
 
-        switch (loginResponse.Response) {
-            case HttpStatusCode.OK: {
-                StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await loginResponse.Data.ReadAsStringAsync());
-                
-                Dictionary<string, string> userData = new() {
-                    { "Authorization", StaticData.UserData.Token }
-                };
-
-                BaseData dataResponse = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/@me/", HttpMethod.Get, null, userData);
-
-                switch (dataResponse.Response) {
-                    case HttpStatusCode.OK: {
-                        StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await dataResponse.Data.ReadAsStringAsync());
-                        Logger.Information($"Login successful. Account: {StaticData.UserData.User()}");
-                        ShowChat();
-                        break;
-                    }
-                    
-                    default:
-                        HttpError.Error(dataResponse, this);
-                        _authHandled = false;
-                        break;
-                }
-                
-                break;
-            }
-
-            default:
-                HttpError.Error(loginResponse, this);
-                _authHandled = false;
-                break;
+        if (!loginResponse.IsOk) {
+            HttpError.Error(loginResponse, this);
+            _authHandled = false;
+            return;
         }
+        
+        StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await loginResponse.Data.ReadAsStringAsync());
+                
+        Dictionary<string, string> userData = new() {
+            { "Authorization", StaticData.UserData.Token }
+        };
+
+        BaseData dataResponse = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/@me/", HttpMethod.Get, null, userData);
+
+        if (!dataResponse.IsOk) {
+            HttpError.Error(dataResponse, this);
+            _authHandled = false;
+            return;
+        }
+            
+        StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await dataResponse.Data.ReadAsStringAsync());
+        Logger.Information($"Login successful. Account: {StaticData.UserData.User()}");
+        ShowChat();
     }
 
     void AlreadyRegistered_OnClick(object? s, RoutedEventArgs e) {
