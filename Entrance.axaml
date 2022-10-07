@@ -6,8 +6,8 @@
         x:Class="KuraSharp.Entrance"
         Title="Kuracord"
         Icon="Assets/favicon.ico"
-        CanResize="False"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        KeyDown="OnKeyDown">
     
     <Grid Name="MainGrid"
           RowDefinitions="Auto, *">

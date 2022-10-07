@@ -1,0 +1,79 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="540"
+        x:Class="KuraSharp.Chat"
+        Title="Kuracord"
+        Icon="Assets/favicon.ico"
+        WindowStartupLocation="CenterScreen">
+    
+        <Grid ColumnDefinitions="70, *">
+                
+                <ScrollViewer Grid.Column="0"
+                              VerticalScrollBarVisibility="Hidden">
+                    
+                    <StackPanel Name="Servers"
+                                Spacing="10">
+                    
+                        <Button Name="Home"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                CornerRadius="50"
+                                Width="70" Height="70">
+                                
+                            <Image Source="avares://KuraSharp/Assets/Discord.png"/>
+                            
+                        </Button>
+                        
+                        <Line StartPoint="12, 0"
+                              EndPoint="58, 0"
+                              Stroke="#6F6F6F"/>
+                        
+                    </StackPanel>
+                    
+                </ScrollViewer>
+                
+            <Grid Grid.Column="1"
+                  Background="#0F0F0F">
+                
+                <Grid ColumnDefinitions="*, Auto">
+                    
+                    <Grid Grid.Column="0"
+                          RowDefinitions="*, Auto">
+                        
+                        <ScrollViewer Grid.Row="0">
+                            
+                            <StackPanel Name="Channels">
+                                
+                                
+                                
+                            </StackPanel>
+                            
+                        </ScrollViewer>
+                        
+                        <Panel Grid.Row="1">
+                            
+                            <TextBlock>
+                                
+                                
+                                
+                            </TextBlock>
+                            
+                        </Panel>
+                        
+                    </Grid>
+                    
+                    <Button Grid.Column="1"
+                            Name="Upload"
+                            Content="ЗАГРУЗИИИИИИИИИИИИИИИИИИИИИИИТЬ"
+                            Click="Upload_OnClick"/>
+                    
+                </Grid>
+                
+            </Grid>
+                
+        </Grid>
+        
+</Window>

@@ -19,7 +19,7 @@ public static class HttpError {
             WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
         
-        ErrorData errorData = JsonConvert.DeserializeObject<ErrorData>(data.JsonData);
+        ErrorData errorData = JsonConvert.DeserializeObject<ErrorData>(await data.Data.ReadAsStringAsync());
                 
         mBoxParams.ContentTitle = $"{errorData.StatusCode}: {errorData.Error}";
         mBoxParams.ContentMessage = errorData.Message;

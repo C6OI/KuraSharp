@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Avalonia;
@@ -28,6 +27,7 @@ public partial class Entrance : Window {
             ShowInCenter = true,
             WindowStartupLocation = WindowStartupLocation.CenterScreen
         };
+        
         InitializeComponent();
         ClientSize = new Size(960, 540);
     }
@@ -63,12 +63,13 @@ public partial class Entrance : Window {
             { "token", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() }
         };
             
-        BaseData response = UrlExtensions.HttpRequest("https://api.kuracord.tk/users/", HttpMethod.Post, data, null);
+        BaseData response = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/", HttpMethod.Post, data, null);
 
         switch (response.Response) {
             case HttpStatusCode.OK:
-                StaticData.UserData = JsonConvert.DeserializeObject<UserData>(response.JsonData);
+                StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await response.Data.ReadAsStringAsync());
                 Logger.Information($"Registration successful. Account: {StaticData.UserData.User()}");
+                ShowChat();
                 break;
             
             default: {
@@ -100,27 +101,29 @@ public partial class Entrance : Window {
             { "password", LoginPasswordField.Text }
         };
 
-        BaseData loginResponse = UrlExtensions.HttpRequest("https://api.kuracord.tk/users/login", HttpMethod.Post, loginData, null);
+        BaseData loginResponse = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/login", HttpMethod.Post, loginData, null);
 
         switch (loginResponse.Response) {
             case HttpStatusCode.OK: {
-                StaticData.UserData = JsonConvert.DeserializeObject<UserData>(loginResponse.JsonData);
+                StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await loginResponse.Data.ReadAsStringAsync());
                 
                 Dictionary<string, string> userData = new() {
                     { "Authorization", StaticData.UserData.Token }
                 };
 
-                BaseData dataResponse = UrlExtensions.HttpRequest("https://api.kuracord.tk/users/@me/", HttpMethod.Get, null, userData);
+                BaseData dataResponse = await UrlExtensions.JsonHttpRequest("https://api.kuracord.tk/users/@me/", HttpMethod.Get, null, userData);
 
                 switch (dataResponse.Response) {
                     case HttpStatusCode.OK: {
-                        StaticData.UserData = JsonConvert.DeserializeObject<UserData>(dataResponse.JsonData);
+                        StaticData.UserData = JsonConvert.DeserializeObject<UserData>(await dataResponse.Data.ReadAsStringAsync());
                         Logger.Information($"Login successful. Account: {StaticData.UserData.User()}");
+                        ShowChat();
                         break;
                     }
                     
                     default:
                         HttpError.Error(dataResponse, this);
+                        _authHandled = false;
                         break;
                 }
                 
@@ -129,6 +132,7 @@ public partial class Entrance : Window {
 
             default:
                 HttpError.Error(loginResponse, this);
+                _authHandled = false;
                 break;
         }
     }
@@ -141,5 +145,11 @@ public partial class Entrance : Window {
     void NotRegistered_OnClick(object? s, RoutedEventArgs e) {
         RegisterPanel.IsVisible = true;
         LoginPanel.IsVisible = false;
+    }
+
+    void ShowChat() {
+        StaticData.Size = ClientSize;
+        new Chat().Show();
+        Close();
     }
 }
