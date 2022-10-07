@@ -1,4 +1,6 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+﻿<!-- ReSharper disable Xaml.UnexpectedTextToken -->
+
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,74 +9,121 @@
         Title="Kuracord"
         Icon="avares://KuraSharp/Assets/favicon.ico"
         WindowStartupLocation="CenterScreen">
-    
-        <Grid ColumnDefinitions="70, *">
-                
-                <ScrollViewer Grid.Column="0"
-                              VerticalScrollBarVisibility="Hidden">
+
+    <Grid ColumnDefinitions="70, *"
+          Background="#161616">
+
+        <ScrollViewer Grid.Column="0"
+                      VerticalScrollBarVisibility="Hidden">
+
+            <StackPanel Name="Servers"
+                        Spacing="10">
+
+                <Button Name="Home"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        CornerRadius="50"
+                        Width="70" Height="70">
+
+                    <Image Source="avares://KuraSharp/Assets/Discord.png" />
+
+                </Button>
+
+                <Separator />
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+        <Grid Grid.Column="1"
+              Background="#1F1F1F">
+
+            <Grid ColumnDefinitions="180, *">
+
+                <Grid Grid.Column="0"
+                      RowDefinitions="Auto, *, Auto">
                     
-                    <StackPanel Name="Servers"
-                                Spacing="10">
-                    
-                        <Button Name="Home"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                CornerRadius="50"
-                                Width="70" Height="70">
-                                
-                            <Image Source="avares://KuraSharp/Assets/Discord.png"/>
+                    <Menu Grid.Row="0"
+                          Name="ServerTop"
+                          Background="#151515">
                             
+                        <MenuItem Name="ServerInfo"
+                                  Header="Kuracord">
+                            
+                            <Button Name="CreateChannel"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent">
+                                Создать #канал
+                            </Button>
+                            
+                        </MenuItem>
+                            
+                    </Menu>
+                    
+                    <Separator Grid.Row="0" 
+                               Margin="0"
+                               VerticalAlignment="Bottom"
+                               Background="#000000"/>
+
+                    <ScrollViewer Grid.Row="1"
+                                  Background="#181818">
+
+                        <StackPanel Name="Channels">
+                            
+                        </StackPanel>
+
+                    </ScrollViewer>
+                    
+                    <Separator Grid.Row="1" 
+                               Margin="0"
+                               VerticalAlignment="Bottom"
+                               Background="#000000"/>
+
+                    <StackPanel Grid.Row="2"
+                                Name="SmallUserInfo"
+                                Background="#151515"
+                                Orientation="Horizontal"
+                                Spacing="7">
+
+                        <Menu>
+
+                            <MenuItem Padding="0"
+                                      DockPanel.Dock="Top">
+                                <MenuItem.Header>
+                                    <Image Name="Avatar"
+                                           Source="avares://KuraSharp/Assets/favicon.ico" />
+                                </MenuItem.Header>
+
+                                <TextBlock>In development...</TextBlock>
+
+                            </MenuItem>
+
+                        </Menu>
+
+                        <TextBlock Name="Username"
+                                   Text="Kuracord#0000"
+                                   VerticalAlignment="Center"
+                                   FontFamily="avares://KuraSharp/Assets/Fonts/OpenSans-VariableFont_wdth,wght.ttf#" />
+
+                        <Button Name="Settings">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Image Width="35" Height="35" HorizontalAlignment="Right"
+                                           Source="avares://KuraSharp/Assets/Settings.png" />
+                                </ControlTemplate>
+                            </Button.Template>
                         </Button>
-                        
-                        <Line StartPoint="12, 0"
-                              EndPoint="58, 0"
-                              Stroke="#6F6F6F"/>
-                        
+
                     </StackPanel>
-                    
-                </ScrollViewer>
-                
-            <Grid Grid.Column="1">
-                
-                <Grid ColumnDefinitions="Auto, *">
-                    
-                    <Grid Grid.Column="0"
-                          RowDefinitions="*, Auto">
-                        
-                        <ScrollViewer Grid.Row="0"
-                                      Background="#C0C0C0">
-                            
-                            <StackPanel Name="Channels">
-                                
-                                <TextBlock></TextBlock>
-                                
-                            </StackPanel>
-                            
-                        </ScrollViewer>
-                        
-                        <Panel Grid.Row="1"
-                               Background="#C5C5C5">
-                            
-                            <TextBlock>
-                                
-                                
-                                
-                            </TextBlock>
-                            
-                        </Panel>
-                        
-                    </Grid>
-                    
-                    <Button Grid.Column="1"
-                            Name="Upload"
-                            Content="ЗАГРУЗИИИИИИИИИИИИИИИИИИИИИИИТЬ"
-                            Click="Upload_OnClick"/>
-                    
+
                 </Grid>
-                
+
             </Grid>
-                
+
         </Grid>
-        
+
+    </Grid>
+
 </Window>
