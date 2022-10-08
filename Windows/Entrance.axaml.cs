@@ -28,7 +28,7 @@ public partial class Entrance : Window {
         };
         
         InitializeComponent();
-        ClientSize = new Size(960, 540);
+        ClientSize = new Size(1200, 675);
     }
 
     void OnKeyDown(object? s, KeyEventArgs e) {

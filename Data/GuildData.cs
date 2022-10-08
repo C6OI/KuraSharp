@@ -8,6 +8,8 @@ public class Channel : BaseData {
     public string Name { get; set; } = "";
     public int Id { get; set; }
     public int Type { get; set; }
+    
+    [JsonIgnore] public bool Opened { get; set; }
 }
 
 public class Member {
