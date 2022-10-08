@@ -6,7 +6,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
-using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -15,7 +14,6 @@ using KuraSharp.Extensions;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Views;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -24,7 +22,7 @@ namespace KuraSharp.Windows;
 public partial class Chat : Window {
     static readonly ILogger Logger = Log.Logger.ForType<Chat>();
     static readonly UserData UserData = StaticData.UserData!;
-    Dictionary<string, string> _headers = new() { { "Authorization", UserData.Token } };
+    readonly Dictionary<string, string>? _authHeader;
 
     public Chat() {
         InitializeComponent();
@@ -32,33 +30,47 @@ public partial class Chat : Window {
         
         // Don't remove it! Previewer doesn't work without it
         if (StaticData.UserData == null) return;
-        
+
+        _authHeader = new Dictionary<string, string> { { "Authorization", UserData.Token } };
         SetupProfile();
 
 #if DEBUG
         this.AttachDevTools();
 #endif
     }
-
+    
     async void SetupProfile() {
         Avatar.Source = new Bitmap(await UrlExtensions.GetPictureAsStream(UserData.Avatar));
-        Username.Text = $"{UserData.Username}#{UserData.Discriminator}";
+        Username.Text = $"{UserData.Username}\n#{UserData.Discriminator}";
 
         FetchServers(true);
     }
 
-    async void OpenChannel(Channel channel) {
+    void OpenChannel(Channel channel) {
         Logger.Information($"Trying to open channel {channel.Name}");
     }
 
-    async void OpenServer(GuildData server) {
+    void OpenServer(GuildData server) {
+        if (server.Opened) return;
+
+        StaticData.UserGuilds.Where(g => g.Opened)
+            .ToList()
+            .ForEach(g => {
+                g.Opened = false;
+                CreateChannel.Click -= CreateChannelClick;
+            });
+        server.Opened = true;
+        
+        Channels.Children.Clear();
+        server.Channels.ForEach(AddChannelToPanel);
         ServerInfo.Header = server.Name;
-        CreateChannel.Click += (s, e) => CreateChannelClick(s, e, server);
+        
+        CreateChannel.Click += CreateChannelClick;
     }
     
     async void FetchServers(bool addToPanel) {
         await Parallel.ForEachAsync(UserData.Guilds, async (guild, cancel) => {
-            BaseData response = await UrlExtensions.JsonHttpRequest($"https://api.kuracord.tk/guilds/{guild.Guild.Id}/", HttpMethod.Get, null, _headers);
+            BaseData response = await UrlExtensions.JsonHttpRequest($"https://api.kuracord.tk/guilds/{guild.Guild.Id}/", HttpMethod.Get, null, _authHeader);
             string jsonResponse = await response.Data.ReadAsStringAsync(cancel);
 
             if (!response.IsOk) {
@@ -72,6 +84,38 @@ public partial class Chat : Window {
 
             if (addToPanel) await Dispatcher.UIThread.InvokeAsync(() => AddServerToPanel(guildData));
         });
+    }
+    
+    async void CreateChannelClick(object? s, RoutedEventArgs e) {
+        GuildData server = StaticData.UserGuilds.First(g => g.Opened);
+        Dictionary<string, string> json = new();
+        MessageBoxInputParams mBoxInput = new() {
+            WindowIcon = Icon,
+            ShowInCenter = true,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            Width = 480, Height = 240,
+            Icon = MessageBox.Avalonia.Enums.Icon.Plus,
+            Multiline = false,
+            WatermarkText = "Имя канала"
+        };
+        
+        IMsBoxWindow<MessageWindowResultDTO> messageBoxInputWindow = MessageBoxManager.GetMessageBoxInputWindow(mBoxInput);
+        MessageWindowResultDTO messageWindowResultDto = await messageBoxInputWindow.ShowDialog(this);
+
+        if (messageWindowResultDto.Button != "Confirm") return;
+
+        json.Add("name", messageWindowResultDto.Message);
+        BaseData response = await UrlExtensions.JsonHttpRequest($"https://api.kuracord.tk/guilds/{server.Id}/channels", HttpMethod.Post, json, _authHeader);
+
+        if (!response.IsOk) {
+            ErrorData error = JsonConvert.DeserializeObject<ErrorData>(await response.Data.ReadAsStringAsync());
+            Logger.Error(error.ToString());
+            return;
+        }
+
+        Channel channel = JsonConvert.DeserializeObject<Channel>(await response.Data.ReadAsStringAsync());
+        server.Channels.Add(channel);
+        AddChannelToPanel(channel);
     }
 
     async void AddServerToPanel(GuildData guild) {
@@ -97,40 +141,14 @@ public partial class Chat : Window {
             server.Content = serverIcon;
         }
 
-        server.Click += (s, e) => {
-            CreateChannel.Click -= (se, ev) => CreateChannelClick(se, ev, guild); 
+        server.Click += (_, _) => {
             OpenServer(guild);
         };
 
         Servers.Children.Add(server);
     }
-    
-    async void CreateChannelClick(object? s, RoutedEventArgs e, GuildData server) {
-        Dictionary<string, string> json = new();
-        MessageBoxInputParams mBoxInput = new() {
-            WindowIcon = Icon,
-            ShowInCenter = true,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen,
-            Width = 480, Height = 240,
-            Icon = MessageBox.Avalonia.Enums.Icon.Plus,
-            Multiline = false
-        };
-        
-        IMsBoxWindow<MessageWindowResultDTO> messageBoxInputWindow = MessageBoxManager.GetMessageBoxInputWindow(mBoxInput);
-        MessageWindowResultDTO messageWindowResultDto = await messageBoxInputWindow.ShowDialog(this);
 
-        if (messageWindowResultDto.Button != "Confirm") return;
-
-        json.Add("name", messageWindowResultDto.Message);
-        BaseData response = await UrlExtensions.JsonHttpRequest($"https://api.kuracord.tk/guilds/{server.Id}/channels", HttpMethod.Post, json, _headers);
-
-        if (!response.IsOk) {
-            ErrorData error = JsonConvert.DeserializeObject<ErrorData>(await response.Data.ReadAsStringAsync());
-            Logger.Error(error.Message);
-            return;
-        }
-
-        Channel channel = JsonConvert.DeserializeObject<Channel>(await response.Data.ReadAsStringAsync());
+    void AddChannelToPanel(Channel channel) {
         Button channelButton = new() {
             Name = channel.Name,
             Tag = channel.Id,
@@ -138,15 +156,14 @@ public partial class Chat : Window {
             BorderThickness = new Thickness(0),
             Background = new SolidColorBrush(Colors.Transparent),
             BorderBrush = new SolidColorBrush(Colors.Transparent),
+            HorizontalAlignment = HorizontalAlignment.Center,
             HorizontalContentAlignment = HorizontalAlignment.Left,
             VerticalContentAlignment = VerticalAlignment.Center,
             ClickMode = ClickMode.Release
         };
 
-        channelButton.Click += (se, ev) => OpenChannel(channel);
-
+        channelButton.Click += (_, _) => OpenChannel(channel);
         Channels.Children.Add(channelButton);
-
         Logger.Information($"Created channel {channel.Name}");
     }
 }

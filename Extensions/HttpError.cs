@@ -25,6 +25,6 @@ public static class HttpError {
         mBoxParams.ContentMessage = errorData.Message;
         await MessageBoxManager.GetMessageBoxStandardWindow(mBoxParams).ShowDialog(window);
                 
-        Logger.Error($"{errorData.Error}\n{errorData.Message}");
+        Logger.Error(errorData.ToString());
     } 
 }

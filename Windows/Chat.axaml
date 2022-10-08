@@ -1,6 +1,4 @@
-﻿<!-- ReSharper disable Xaml.UnexpectedTextToken -->
-
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -39,7 +37,7 @@
         <Grid Grid.Column="1"
               Background="#1F1F1F">
 
-            <Grid ColumnDefinitions="180, *">
+            <Grid ColumnDefinitions="200, *">
 
                 <Grid Grid.Column="0"
                       RowDefinitions="Auto, *, Auto">
@@ -70,9 +68,7 @@
                     <ScrollViewer Grid.Row="1"
                                   Background="#181818">
 
-                        <StackPanel Name="Channels">
-                            
-                        </StackPanel>
+                        <StackPanel Name="Channels"/>
 
                     </ScrollViewer>
                     
@@ -85,7 +81,8 @@
                                 Name="SmallUserInfo"
                                 Background="#151515"
                                 Orientation="Horizontal"
-                                Spacing="7">
+                                Spacing="7"
+                                MaxWidth="200">
 
                         <Menu>
 
@@ -96,7 +93,7 @@
                                            Source="avares://KuraSharp/Assets/favicon.ico" />
                                 </MenuItem.Header>
 
-                                <TextBlock>In development...</TextBlock>
+                                <TextBlock Text="In development..."/>
 
                             </MenuItem>
 
@@ -105,12 +102,14 @@
                         <TextBlock Name="Username"
                                    Text="Kuracord#0000"
                                    VerticalAlignment="Center"
-                                   FontFamily="avares://KuraSharp/Assets/Fonts/OpenSans-VariableFont_wdth,wght.ttf#" />
+                                   FontFamily="avares://KuraSharp/Assets/Fonts/OpenSans-VariableFont_wdth,wght.ttf#"
+                                   MaxWidth="115"/>
 
                         <Button Name="Settings">
                             <Button.Template>
                                 <ControlTemplate>
-                                    <Image Width="35" Height="35" HorizontalAlignment="Right"
+                                    <Image Width="35" Height="35"
+                                           HorizontalAlignment="Right"
                                            Source="avares://KuraSharp/Assets/Settings.png" />
                                 </ControlTemplate>
                             </Button.Template>

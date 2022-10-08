@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace KuraSharp.Data;
 
-public class Channel {
+public class Channel : BaseData {
     public string Name { get; set; } = "";
     public int Id { get; set; }
     public int Type { get; set; }
@@ -54,6 +55,7 @@ public class GuildData : BaseData {
     }
 
     string? _icon;
+    [JsonIgnore] public bool Opened { get; set; }
 }
 
 public class User {
