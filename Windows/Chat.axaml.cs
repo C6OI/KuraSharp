@@ -32,6 +32,7 @@ public partial class Chat : Window {
         if (StaticData.UserData == null) return;
 
         _authHeader = new Dictionary<string, string> { { "Authorization", UserData.Token } };
+        
         SetupProfile();
 
 #if DEBUG
@@ -57,7 +58,7 @@ public partial class Chat : Window {
             .ToList()
             .ForEach(g => {
                 g.Opened = false;
-                CreateChannel.Click -= CreateChannelClick;
+                NewChannel.Click -= CreateChannel;
             });
         server.Opened = true;
         
@@ -65,7 +66,7 @@ public partial class Chat : Window {
         server.Channels.ForEach(AddChannelToPanel);
         ServerInfo.Header = server.Name;
         
-        CreateChannel.Click += CreateChannelClick;
+        NewChannel.Click += CreateChannel;
     }
     
     async void FetchServers(bool addToPanel) {
@@ -86,9 +87,38 @@ public partial class Chat : Window {
         });
     }
     
-    async void CreateChannelClick(object? s, RoutedEventArgs e) {
+    async void CreateServer(object? s, RoutedEventArgs e) {
+        MessageBoxInputParams mBoxInput = new() {
+            WindowIcon = Icon,
+            ShowInCenter = true,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen,
+            Width = 480, Height = 240,
+            Icon = MessageBox.Avalonia.Enums.Icon.Plus,
+            Multiline = false,
+            WatermarkText = "Имя сервера"
+        };
+        
+        IMsBoxWindow<MessageWindowResultDTO> messageBoxInputWindow = MessageBoxManager.GetMessageBoxInputWindow(mBoxInput);
+        MessageWindowResultDTO messageWindowResultDto = await messageBoxInputWindow.ShowDialog(this);
+
+        if (messageWindowResultDto.Button != "Confirm") return;
+        
+        Dictionary<string, string> json = new() { { "name", messageWindowResultDto.Message } };
+        BaseData response = await UrlExtensions.JsonHttpRequest($"https://api.kuracord.tk/guilds/", HttpMethod.Post, json, _authHeader);
+
+        if (!response.IsOk) {
+            ErrorData error = JsonConvert.DeserializeObject<ErrorData>(await response.Data.ReadAsStringAsync());
+            Logger.Error(error.ToString());
+            return;
+        }
+
+        GuildData server = JsonConvert.DeserializeObject<GuildData>(await response.Data.ReadAsStringAsync());
+        StaticData.UserGuilds.Add(server);
+        AddServerToPanel(server);
+    }
+    
+    async void CreateChannel(object? s, RoutedEventArgs e) {
         GuildData server = StaticData.UserGuilds.First(g => g.Opened);
-        Dictionary<string, string> json = new();
         MessageBoxInputParams mBoxInput = new() {
             WindowIcon = Icon,
             ShowInCenter = true,
@@ -103,8 +133,8 @@ public partial class Chat : Window {
         MessageWindowResultDTO messageWindowResultDto = await messageBoxInputWindow.ShowDialog(this);
 
         if (messageWindowResultDto.Button != "Confirm") return;
-
-        json.Add("name", messageWindowResultDto.Message);
+        
+        Dictionary<string, string> json = new() { { "name", messageWindowResultDto.Message } };
         BaseData response = await UrlExtensions.JsonHttpRequest($"https://api.kuracord.tk/guilds/{server.Id}/channels", HttpMethod.Post, json, _authHeader);
 
         if (!response.IsOk) {
@@ -117,7 +147,7 @@ public partial class Chat : Window {
         server.Channels.Add(channel);
         AddChannelToPanel(channel);
     }
-
+    
     async void AddServerToPanel(GuildData guild) {
         Button server = new() {
             Name = guild.Name,
@@ -144,8 +174,8 @@ public partial class Chat : Window {
         server.Click += (_, _) => {
             OpenServer(guild);
         };
-
-        Servers.Children.Add(server);
+        
+        Servers.Children.Insert(Servers.Children.Count - 1, server);
     }
 
     void AddChannelToPanel(Channel channel) {

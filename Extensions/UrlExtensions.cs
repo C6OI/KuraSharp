@@ -27,7 +27,8 @@ public static class UrlExtensions {
             Method = httpMethod,
             RequestUri = new Uri(uri),
             Headers = {
-                { HttpRequestHeader.Accept.ToString(), "application/json" }
+                { HttpRequestHeader.Accept.ToString(), "application/json" },
+                { HttpRequestHeader.ContentType.ToString(), "application/json" }
             }
         };
 

@@ -24,11 +24,23 @@
                         CornerRadius="50"
                         Width="70" Height="70">
 
-                    <Image Source="avares://KuraSharp/Assets/Discord.png" />
+                    <Image Source="avares://KuraSharp/Assets/Home.png" />
 
                 </Button>
 
                 <Separator />
+                
+                <Button Name="NewServer"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        CornerRadius="20"
+                        Width="70" Height="70"
+                        Click="CreateServer">
+
+                    <Image Source="avares://KuraSharp/Assets/favicon.ico" />
+
+                </Button>
 
             </StackPanel>
 
@@ -49,7 +61,7 @@
                         <MenuItem Name="ServerInfo"
                                   Header="Kuracord">
                             
-                            <Button Name="CreateChannel"
+                            <Button Name="NewChannel"
                                     BorderThickness="0"
                                     Background="Transparent"
                                     BorderBrush="Transparent">
